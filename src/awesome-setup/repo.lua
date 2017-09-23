@@ -10,7 +10,7 @@ local env = require(__here .. 'env')
 
 -- module definition
 
-local r = {
+local mod = {
     _source = {
         redflat = {
             loader = "git";
@@ -61,12 +61,12 @@ local r = {
         };
     };
 }
-r._source["worron.redflat"] = { alias = "redflat"; }
-r._source["awesome-config"] = { alias = "awesome_config"; }
-r._source["worron.awesome-config"] = { alias = "awesome_config"; }
-r._source["Elv13.radical"] = { alias = "radical"; }
-r._source["raksooo.poppin"] = { alias = "poppin"; }
-r._source["connman-widget"] = { alias = "connman_widget"; }
+mod._source["worron.redflat"] = { alias = "redflat"; }
+mod._source["awesome-config"] = { alias = "awesome_config"; }
+mod._source["worron.awesome-config"] = { alias = "awesome_config"; }
+mod._source["Elv13.radical"] = { alias = "radical"; }
+mod._source["raksooo.poppin"] = { alias = "poppin"; }
+mod._source["connman-widget"] = { alias = "connman_widget"; }
 
 
 
@@ -97,7 +97,7 @@ local function _add_unique(list_a, list_b)
 end
 
 
-function r.update_lua_path(module_def, repo_dir)
+function mod.update_lua_path(module_def, repo_dir)
     local loader = loaders[module_def.loader]
     if loader ~= nil then
         local lp = loader.lpath(module_def, repo_dir)
@@ -118,7 +118,7 @@ end
 
 
 -- Process a specific module definition into the given repo directory.
-function r.process(module_def, repo_dir, force_load)
+function mod.process(module_def, repo_dir, force_load)
     if not force_load and env.is_dir(repo_dir .. '/' .. module_def.into) then
         return { ok = true; err = "path already exists"; }
     end
@@ -159,9 +159,9 @@ local function _load_module_definitions(module_table, existing)
     for k, v in pairs(module_table) do
         local m
         if type(k) == "number" and type(v) == "string" then
-            m = r._load_module_ref(v)
+            m = mod._load_module_ref(v)
         elseif type(k) == "string" and type(v) == "table" then
-            m = r._load_module_def(k, v)
+            m = mod._load_module_def(k, v)
         else
             local key = "error" .. err_count
             err_count = err_count + 1
@@ -172,7 +172,7 @@ local function _load_module_definitions(module_table, existing)
                 ret[m.into] = m
                 if m.depends ~= nil then
                     -- Note: there's a small chance for infinite recursion here.
-                    _merge_mods(ret, r.load_module_definitions(m.depends, ret))
+                    _merge_mods(ret, mod.load_module_definitions(m.depends, ret))
                 end
             end
             -- else it was loaded earlier, so don't repeat ourselves
@@ -187,18 +187,18 @@ end
 
 
 -- Load the module definitions given from the input.  The definitions in the
--- argument can either be a list of the names in r._source, or a complete
+-- argument can either be a list of the names in mod._source, or a complete
 -- module source definition.
-function r.load_module_definitions(module_table)
+function mod.load_module_definitions(module_table)
     return _load_module_definitions(module_table, {})
 end
 
 
 
-function r._load_module_ref(name, displayname)
+function mod._load_module_ref(name, displayname)
     local ret = {}
-    if r._source[name] ~= nil then
-        ret = r._load_module_def(displayname, r._source[name])
+    if mod._source[name] ~= nil then
+        ret = mod._load_module_def(displayname, mod._source[name])
     else
         ret.ok = false
         ret.err = 'unknown module ' .. displayname
@@ -215,7 +215,7 @@ local function _global_moddef_validation(name, moddef)
 end
 
 
-function r._load_module_def(name, moddef)
+function mod._load_module_def(name, moddef)
     local ret = {}
     if moddef == nil then
         ret.ok = false
@@ -226,7 +226,7 @@ function r._load_module_def(name, moddef)
             ret.ok = false
             ret.err = 'Alias module self-reference: ' .. name .. '>' .. moddef.alias
         else
-            ret = r._load_module_ref(moddef.alias, name .. '>' .. moddef.alias)
+            ret = mod._load_module_ref(moddef.alias, name .. '>' .. moddef.alias)
         end
     elseif moddef.loader == nil or type(moddef.loader) ~= "string" then
         ret.ok = false
@@ -256,4 +256,4 @@ function r._load_module_def(name, moddef)
     return ret
 end
 
-return r
+return mod

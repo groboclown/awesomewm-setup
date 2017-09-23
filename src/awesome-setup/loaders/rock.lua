@@ -6,11 +6,22 @@ local r = {}
 
 function r.fetch(module_config, repo_dir)
     -- luarocks install --tree repo_dir module_config.rock
+    local cmd = ('luarocks install --tree "' ..
+        repo_dir .. '/' .. module_config.into .. '" ' ..
+        module_config.rock)
+    local status, err = os.execute(cmd)
+    if not status then
+        print("Failed " .. err)
+        return { ok = false; err = err; }
+    end
+    return { ok = true; }
 end
 
 function r.validate(module_config)
     -- module-specific check
-    
+    if type(module_config.rock) ~= "string" then
+        return { ok = false; err = "module must define 'rock' name"; }
+    end
     
     
     -- System level check

@@ -26,6 +26,15 @@ function r.fetch(module_config, repo_dir)
         print("Failed " .. err)
         return { ok = false; err = err; }
     end
+    if module_config.version ~= nil then
+        cmd = ("cd " .. git_dir ..
+            " && git checkout " .. module_config.version)
+        status, err = os.execute(cmd)
+        if not status then
+            print("Failed " .. err)
+            return { ok = false; err = err; }
+        end
+    end
     return { ok = true; }
 end
 

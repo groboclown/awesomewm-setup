@@ -48,10 +48,9 @@ local function _read_config()
     local confdir = env.get_config_dir()
     
     -- Check if the configuration file exists
-    local requires_filename = confdir .. "/modules.lua"
-    local f = io.open(requires_filename, "r")
-    if f ~= nil then
-        io.close(f)
+    local requires_filename = confdir .. "module-setup.lua"
+    if env.is_file(requires_filename) then
+        print("Loading configuration from " .. requires_filename)
         local status, value = pcall(dofile, requires_filename)
         if status then
             if type(value) ~= "table" then
@@ -74,6 +73,7 @@ local function _read_config()
         end
     else
         -- No configuration
+        print("No configuration " .. requires_filename)
         return {
             ok = true;
             status = "default config; no such file " .. requires_filename;
