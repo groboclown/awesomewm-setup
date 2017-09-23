@@ -11,13 +11,16 @@ local pairs = pairs
 local __here = (...):match("(.-)[^%.]+$")
 local env = require(__here .. "env")
 local repo = require(__here .. "repo")
+local log = require(__here .. 'log')
 
 -- Setup our module
 local config = {}
 
 
-function config.setup_modules(force_load)
-    local c = config.load_config()
+function config.setup_modules(c, force_load)
+    if c == nil then
+        c = config.load_config()
+    end
     if c.ok then
         return config.load_modules(c, force_load)
     else
@@ -33,12 +36,15 @@ local function _populate_default_config_values(c)
     if c.modules == nil then
         c.modules = {}
     end
+    c.log = log
+    if c.logfile ~= nil then
+        c.log.logfile = c.logfile
+    end
     return c
 end
 
 
--- Public Module functions
-function config.load_config()
+local function _read_config()
     local confdir = env.get_config_dir()
     
     -- Check if the configuration file exists
@@ -58,7 +64,7 @@ function config.load_config()
             value.ok = true
             value.status = "loaded from " .. requires_filename
             value.err = nil
-            return _populate_default_config_values(value)
+            return value
         else
             return {
                 ok = false;
@@ -68,13 +74,19 @@ function config.load_config()
         end
     else
         -- No configuration
-        print("No file " .. requires_filename)
-        return _populate_default_config_values{
+        return {
             ok = true;
-            status = "default config";
+            status = "default config; no such file " .. requires_filename;
             err = nil;
         }
     end
+end
+
+-- Public Module functions
+function config.load_config()
+    local c = _populate_default_config_values(_read_config())
+    config.last = c
+    return c
 end
 
 
