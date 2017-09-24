@@ -32,7 +32,7 @@ return {
     };
 }
 ```
-    A full list of available modules is [listed below](#modules).
+A full list of available modules is [listed below](#modules).
 4. Update your awesome `rc.lua` file to load the configuration, modules,
     and simple error handlers:
 ```lua
@@ -41,7 +41,10 @@ config = require "awesome-setup".setup()
 
 ## Usage
 
+*TODO add some description about the general use of the module.*
 
+*TODO include reference to the specific config table values that
+are important, and how you can add any others you want.*
 
 ### Modules
 
@@ -77,3 +80,5 @@ modules = {
 
 Modules are installed into the `$XDG_CONFIG_HOME/awesome/lib-repo` directory,
 and dynamically added into the Lua path.
+
+*TODO describe the fields on the module table.*
