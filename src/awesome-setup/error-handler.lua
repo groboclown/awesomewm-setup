@@ -5,7 +5,7 @@
 
 local mod = {
     -- allows for access to the logger.
-    _config_module = nil;
+    log = nil;
 }
 
 
@@ -14,7 +14,7 @@ local mod = {
 local nexist, naughty = pcall(require, "naughty")
 
 local function log_error(...)
-    if mod._config_module ~= nil and mod._config_module.log ~= nil then
+    if mod.log ~= nil then
         local depth = mod._config_module.log._logger_stack_depth
         mod._config_module.log._logger_stack_depth = 4
         mod._config_module.log.error(...)
@@ -50,7 +50,8 @@ function mod.handle_runtime_errors()
     end)
 end
 
-function mod.setup_error_handlers()
+function mod.setup_error_handlers(c)
+    mod.log = c.log
     mod.check_startup_errors()
     mod.handle_runtime_errors()
 end

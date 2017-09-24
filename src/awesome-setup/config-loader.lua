@@ -14,15 +14,15 @@ local repo = require(__here .. "repo")
 local log = require(__here .. 'log')
 
 -- Setup our module
-local config = {}
+local mod = {}
 
 
-function config.setup_modules(c, force_load)
+function mod.setup_modules(c, force_load)
     if c == nil then
-        c = config.load_config()
+        c = mod.load_config()
     end
     if c.ok then
-        return config.load_modules(c, force_load)
+        return mod.load_modules(c, force_load)
     else
         return c 
     end
@@ -48,9 +48,9 @@ local function _read_config()
     local confdir = env.get_config_dir()
     
     -- Check if the configuration file exists
-    local requires_filename = confdir .. "module-setup.lua"
+    local requires_filename = confdir .. "config.lua"
     if env.is_file(requires_filename) then
-        print("Loading configuration from " .. requires_filename)
+        -- print("Loading configuration from " .. requires_filename)
         local status, value = pcall(dofile, requires_filename)
         if status then
             if type(value) ~= "table" then
@@ -83,31 +83,35 @@ local function _read_config()
 end
 
 -- Public Module functions
-function config.load_config()
+function mod.load_config()
     local c = _populate_default_config_values(_read_config())
-    config.last = c
     return c
 end
 
 
-function config.load_modules(c, force_load)
+function mod.load_modules(c, force_load)
     if c.ok and c.modules ~= nil and #c.modules > 0 and c.repo_dir ~= nil then
-        print("loading module definitions")
         local module_defs = repo.load_module_definitions(c.modules)
         local ret = { ok = true; err = nil; }
         local errors = ''
         for k,v in pairs(module_defs) do
-            print("Processing module " .. k)
+            if c.log ~= nil then
+                c.log.info("Processing module " .. k)
+            end
             if not v.ok then
                 errors = errors .. '\n * ' .. k .. ' (definition issue): ' .. v.err
             else
                 local result = repo.process(v, c.repo_dir, force_load)
                 if result.ok then
                     repo.update_lua_path(v, c.repo_dir)
-                    print("Loaded module " .. k)
+                    if c.log ~= nil then
+                        c.log.info("Loaded module " .. k)
+                    end
                 else
                     errors = errors .. '\n * ' .. k .. ': ' .. result.err
-                    print("Failed to load module " .. k .. ": " .. result.err)
+                    if c.log ~= nil then
+                        c.log.info("Failed to load module " .. k .. ": " .. result.err)
+                    end
                 end
             end
         end
@@ -122,4 +126,4 @@ function config.load_modules(c, force_load)
 end
 
 
-return config
+return mod
