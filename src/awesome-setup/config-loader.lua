@@ -44,11 +44,9 @@ local function _populate_default_config_values(c)
 end
 
 
-local function _read_config()
-    local confdir = env.get_config_dir()
-    
+local function _read_config(requires_filename)
     -- Check if the configuration file exists
-    local requires_filename = confdir .. "config.lua"
+    requires_filename = requires_filename or (env.get_config_dir() .. "config.lua")
     if env.is_file(requires_filename) then
         -- print("Loading configuration from " .. requires_filename)
         local status, value = pcall(dofile, requires_filename)
@@ -73,7 +71,7 @@ local function _read_config()
         end
     else
         -- No configuration
-        print("No configuration " .. requires_filename)
+        -- print("No configuration " .. requires_filename)
         return {
             ok = true;
             status = "default config; no such file " .. requires_filename;
@@ -83,9 +81,11 @@ local function _read_config()
 end
 
 -- Public Module functions
-function mod.load_config()
-    local c = _populate_default_config_values(_read_config())
-    return c
+function mod.load_config(c)
+    if c == nil or type(c) == 'string' then
+        c = _read_config(c)
+    end
+    return _populate_default_config_values(c)
 end
 
 

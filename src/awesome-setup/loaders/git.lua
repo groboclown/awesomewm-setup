@@ -67,7 +67,10 @@ end
 
 function r.lpath(module_config, repo_dir)
     if module_config.luadir ~= nil then
-        return { (repo_dir .. '/' .. module_config.into .. '/' .. module_config.luadir); }
+        return {
+            (repo_dir .. '/' .. module_config.into .. '/' .. module_config.luadir .. '/?/init.lua'),
+            (repo_dir .. '/' .. module_config.into .. '/' .. module_config.luadir .. '/?.lua'),
+        }
     end
     return {}
 end

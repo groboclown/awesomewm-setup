@@ -9,8 +9,8 @@ local mod = {
     error_handler = require(__here .. "error-handler");
 }
 
-mod.setup = function()
-    local r = mod.config_loader.load_config()
+mod.setup = function(c)
+    local r = mod.config_loader.load_config(c)
     mod.config_loader.setup_modules(r)
     mod.error_handler.setup_error_handlers(r)
     return r
