@@ -19,6 +19,8 @@ local levels = {
 local log = {
     logfile = nil;
     console = false;
+    ui = false;
+    ui_level = 4;
     color = true;
     level = "trace";
     _logger_stack_depth = 2;
@@ -50,7 +52,7 @@ local level_index = {}
 for i,c in ipairs(levels) do
     level_index[c.name] = i
     log[c.name] = function(...)
-        if level_index[log.level] ~= nil or i < level_index[log.level] then
+        if level_index[log.level] == nil or i < level_index[log.level] then
             -- early out if log level hides this message
             return
         end
@@ -78,6 +80,18 @@ for i,c in ipairs(levels) do
                 fp:write(nocolor)
                 fp:close()
             end
+        end
+        if log.ui or i >= log.ui_level then
+            if nocolor == nil then
+                nocolor = string.format("%s%s] %s: %s",
+                    c.display, now, src, msg)
+            end
+            local naughty = require("naughty")
+            naughty.notify{
+                preset = naughty.config.presets.critical;
+                title = "Log";
+                text = nocolor
+            }
         end
     end
 end

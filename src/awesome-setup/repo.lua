@@ -65,6 +65,15 @@ function mod.update_lua_path(module_def, repo_dir)
             package.cpath = table.concat(cp, ";")
         end
     end
+
+local fp = io.open('/tmp/awesome.log', 'a')
+if fp ~= nil then
+    fp:write('Module ' .. (module_def.url or '?'))
+    fp:write('Updated lua path: ' .. package.path)
+    fp:write('Updated c path: ' .. package.cpath)
+    fp:close()
+end
+
 end
 
 
@@ -79,7 +88,7 @@ function mod.process(module_def, repo_dir, force_load)
     if not results.ok then
         return results
     end
-    -- FIXME do something with the theme?
+    -- FIXME do something with the theme, to allow custom theme stuff?
     return { ok = true; }
 end
 

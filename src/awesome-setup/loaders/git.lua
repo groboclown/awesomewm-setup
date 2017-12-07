@@ -8,7 +8,6 @@ local r = {}
 
 
 function r.fetch(module_config, repo_dir)
-    -- TODO let ".version" actually do something
     local cmd
     local git_dir = repo_dir .. module_config.into
     if env.is_dir(git_dir .. '/.git') then
@@ -17,21 +16,21 @@ function r.fetch(module_config, repo_dir)
             " && git pull")
     else
         -- clone the git
-        cmd = ("mkdir -p "  .. repo_dir ..
-            " && cd " .. repo_dir ..
-            " && git clone " .. module_config.url .. " " .. module_config.into)
+        cmd = ("sh -c 'mkdir -p "  .. repo_dir ..
+            " ; cd " .. repo_dir ..
+            " && git clone " .. module_config.url .. " " .. module_config.into .. " 2>&1'")
     end
-    local status, err = os.execute(cmd)
+    local pid = io.popen(cmd)
+    local output = pid:read('*all')
+    local status, err, signal = pid:close()
     if not status then
-        print("Failed " .. err)
-        return { ok = false; err = err; }
+        return { ok = false; err = output; }
     end
     if module_config.version ~= nil then
         cmd = ("cd " .. git_dir ..
             " && git checkout " .. module_config.version)
         status, err = os.execute(cmd)
         if not status then
-            print("Failed " .. err)
             return { ok = false; err = err; }
         end
     end

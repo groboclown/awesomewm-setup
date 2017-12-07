@@ -40,6 +40,9 @@ local function _populate_default_config_values(c)
     if c.logfile ~= nil then
         c.log.logfile = c.logfile
     end
+    if c.logui ~= nil then
+        c.log.ui = c.logui
+    end
     return c
 end
 

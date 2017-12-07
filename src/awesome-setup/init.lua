@@ -11,7 +11,9 @@ local mod = {
 
 mod.setup = function(c)
     local r = mod.config_loader.load_config(c)
-    mod.config_loader.setup_modules(r)
+    if r.ok then
+        mod.config_loader.setup_modules(r)
+    end
     mod.error_handler.setup_error_handlers(r)
     return r
 end
