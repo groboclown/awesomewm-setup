@@ -102,6 +102,7 @@ function mod.load_modules(c, force_load)
                 c.log.info("Processing module " .. k)
             end
             if not v.ok then
+                c.log.info(" - Processing caused error " .. v.err)
                 errors = errors .. '\n * ' .. k .. ' (definition issue): ' .. v.err
             else
                 local result = repo.process(v, c.repo_dir, force_load)

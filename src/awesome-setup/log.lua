@@ -78,6 +78,7 @@ for i,c in ipairs(levels) do
             local fp = io.open(log.logfile, 'a')
             if fp ~= nil then
                 fp:write(nocolor)
+                fp:write("\n")
                 fp:close()
             end
         end

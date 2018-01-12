@@ -122,7 +122,7 @@ local function _load_module_definitions(module_table, existing)
     for k, v in pairs(module_table) do
         local m
         if type(k) == "number" and type(v) == "string" then
-            m = mod._load_module_ref(v)
+            m = mod._load_module_ref(v, v)
         elseif type(k) == "string" and type(v) == "table" then
             m = mod._load_module_def(k, v)
         else
@@ -162,6 +162,8 @@ function mod._load_module_ref(name, displayname)
     local ret = {}
     if mod._source[name] ~= nil then
         ret = mod._load_module_def(displayname, mod._source[name])
+        ret.err = ret.err or ''
+        ret.err = ret.err .. '\n (loaded from reference ' .. name .. '/' .. displayname .. ')'
     else
         ret.ok = false
         ret.err = 'unknown module ' .. displayname
@@ -180,7 +182,10 @@ end
 
 function mod._load_module_def(name, moddef)
     local ret = {}
-    if moddef == nil then
+    if name == nil then
+        ret.ok = false
+        ret.err = "nil module name"
+    elseif moddef == nil then
         ret.ok = false
         ret.err = "bad module format for " .. name
     elseif moddef.alias ~= nil then
