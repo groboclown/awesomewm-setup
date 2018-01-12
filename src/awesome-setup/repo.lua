@@ -19,6 +19,8 @@ mod._source["worron.awesome-config"] = { alias = "awesome_config"; }
 mod._source["Elv13.radical"] = { alias = "radical"; }
 mod._source["raksooo.poppin"] = { alias = "poppin"; }
 mod._source["connman-widget"] = { alias = "connman_widget"; }
+mod._source["streetturtle"] = { alias = "streetturtle_widgets"; }
+mod._source["streetturtle-widgets"] = { alias = "streetturtle_widgets"; }
 
 
 

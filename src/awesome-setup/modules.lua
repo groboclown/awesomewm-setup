@@ -38,6 +38,16 @@ return {
         themedir = "themes";
         depends = {};
     };
+    streetturtle_widgets = {
+        loader = "git";
+        url = "https://github.com/streetturtle/awesome-wm-widgets.git";
+        into = "streetturtle.awesome-wm-widgets.d/awesome-wm-widgets";
+        luadir = "..";
+        sodir = nil;
+        themedir = nil;
+        version = "HEAD";
+        depends = {};
+    };
     
     -- awesome-config is more of an example layout, rather than a library.
     -- However, parts of it can be included.
